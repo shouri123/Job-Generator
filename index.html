@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Predictor 3000</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Setup */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D222B; /* Dark teal background as fallback */
+            background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2093&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #E2E8F0; /* slate-200 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        /* Main Card and Layout */
+        .container {
+            width: 100%;
+            max-width: 28rem; /* 448px */
+        }
+
+        .card {
+            background-color: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: #FFFFFF;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .header p {
+            color: #9CA3AF;
+            margin-top: 0.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 640px) {
+            .input-row {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #D1D5DB;
+            margin-bottom: 0.25rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            background-color: #111827;
+            border: 1px solid #4B5563;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: #FFFFFF;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+        }
+
+        select:invalid {
+            color: #6B7280;
+        }
+
+        select option {
+            background-color: #111827;
+            color: #FFFFFF;
+        }
+
+        input::placeholder {
+            color: #6B7280;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #FFFFFF;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background-image: none;
+            background-color: #FFFFFF;
+            color: #000000;
+            font-weight: bold;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -2px rgba(255, 255, 255, 0.1);
+        }
+        
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.15), 0 4px 6px -2px rgba(255, 255, 255, 0.15);
+            background-color: #E5E7EB;
+        }
+
+        /* Result Card */
+        .result-card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 1px solid;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .result-card-success,
+        .result-card-loading {
+            background-color: rgba(10, 10, 10, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .result-card-error {
+            background-color: rgba(30, 30, 30, 0.7);
+            border-color: #9CA3AF;
+            color: #FFFFFF;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .result-card p {
+            margin: 0;
+        }
+        
+        .result-card p:not(:first-child) {
+            margin-top: 0.5rem;
+        }
+
+        /* Animations & Special Effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: #D1D5DB;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            height: 1.25rem;
+            width: 1.25rem;
+            color: #FFFFFF;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .gradient-text {
+            background-image: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 1rem !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Main container card -->
+        <div class="card">
+            <!-- Header section with Icon -->
+            <div class="header">
+                 <div class="header-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="m9.5 14.5 1.5 1.5 3.5-3.5"></path>
+                    </svg>
+                </div>
+                <h1>Job Predictor </h1>
+                <p>Enter your details and let fate decide your career!</p>
+            </div>
+
+            <!-- Input form -->
+            <form id="predictorForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., Alex Doe" required>
+                </div>
+                <div class="input-row form-group">
+                    <div>
+                        <label for="age">Your Age</label>
+                        <input type="number" id="age" name="age" min="16" max="120" placeholder="e.g., 25" required>
+                    </div>
+                    <div>
+                        <label for="ygpa">Your YGPA (1-10)</label>
+                        <input type="number" id="ygpa" name="ygpa" step="0.1" min="1" max="10" placeholder="e.g., 8.5" required>
+                    </div>
+                     <div>
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="" disabled selected>Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Submit button -->
+                <button type="submit" class="submit-btn">
+                    Find My Job!
+                </button>
+            </form>
+        </div>
+
+        <!-- Result display area -->
+        <div id="result">
+            <!-- Content will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Main script for the Job Predictor
+        const predictorForm = document.getElementById('predictorForm');
+        const resultDiv = document.getElementById('result');
+        const nameInput = document.getElementById('name');
+        const ageInput = document.getElementById('age');
+        const ygpaInput = document.getElementById('ygpa');
+        const genderInput = document.getElementById('gender');
+
+        // A list of fun and imaginative job titles
+        const jobTitles = [
+            " Architect",
+            "Quantum Corgi Trainer",
+            "Lead Biscuit Dunker",
+            "Professional Cloud Gazer",
+            "Chief Meme Officer",
+            "Intergalactic Pizza Delivery Pilot",
+            "Dinosaur Whisperer",
+            "Senior Nap Strategist",
+            "Time Travel Quality Assurance",
+            "Full-Stack Pancake Developer",
+            "Ethical Vending Machine Hacker",
+            "AI Stand-up Comedian",
+            "Chief Gummy Bear Taster",
+            "Professional Bubble Wrap Popper",
+            "Director of Sock Matching"
+        ];
+
+        // Add an immediate event listener to the gender dropdown
+        genderInput.addEventListener('change', () => {
+            const selectedGender = genderInput.value;
+            if (selectedGender === 'Other' || selectedGender === 'Prefer not to say') {
+                displayResult('Shouri only believes in two Genders', 'error');
+                // Reset the dropdown to the placeholder so the invalid option isn't selected
+                genderInput.value = ""; 
+            } else if (selectedGender) {
+                // If a valid option is chosen, clear a previous gender error if it exists
+                const errorCard = resultDiv.querySelector('.result-card-error');
+                if (errorCard && errorCard.textContent.includes('Shouri only believes in two Genders')) {
+                    resultDiv.innerHTML = '';
+                }
+            }
+        });
+
+        // Listen for form submission
+        predictorForm.addEventListener('submit', (event) => {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Get user input values
+            const name = nameInput.value.trim();
+            const age = ageInput.value.trim();
+            const ygpa = ygpaInput.value.trim();
+            const gender = genderInput.value;
+
+            // Simple validation
+            if (!name || !ygpa || !age || !gender) {
+                displayResult('Please fill out all fields.', 'error');
+                return;
+            }
+
+            if (gender === 'Other' || gender === 'Prefer not to say') {
+                displayResult('Shouri only believes in two Genders', 'error');
+                return;
+            }
+
+            if (parseInt(age) < 16 || parseInt(age) > 120) {
+                 displayResult('Age must be between 16 and 120.', 'error');
+                 return;
+            }
+            
+            if (parseFloat(ygpa) > 10.0 || parseFloat(ygpa) < 1.0) {
+                displayResult('YGPA must be between 1 and 10.', 'error');
+                return;
+            }
+
+            // Show a "thinking" state
+            displayResult('Calculating your destiny...', 'loading');
+
+            // Simulate a delay for dramatic effect
+            setTimeout(() => {
+                // Pick a random job title
+                const randomIndex = Math.floor(Math.random() * jobTitles.length);
+                const assignedJob = jobTitles[randomIndex];
+
+                // Create the success message
+                const successMessage = `
+                    <p>Congratulations, <span style="font-weight: bold; color: white;">${name}</span>!</p>
+                    <p style="color: #9CA3AF;">Based on your profile (Age: ${age}, Gender: ${gender}, YGPA: ${ygpa}), the cosmic algorithm has assigned you the prestigious role of:</p>
+                    <p class="gradient-text">${assignedJob}</p>
+                `;
+                
+                displayResult(successMessage, 'success');
+            }, 2000); // 2-second delay
+        });
+
+        /**
+         * Displays a message in the result area with appropriate styling.
+         * @param {string} message - The HTML or text message to display.
+         * @param {string} type - The type of message ('success', 'error', 'loading').
+         */
+        function displayResult(message, type) {
+            let cardClass = '';
+            let content = '';
+
+            // Set styles based on the message type
+            switch (type) {
+                case 'success':
+                    cardClass = 'result-card-success';
+                    content = message;
+                    break;
+                case 'error':
+                    cardClass = 'result-card-error';
+                    content = `<p>${message}</p>`;
+                    break;
+                case 'loading':
+                    cardClass = 'result-card-loading';
+                    content = `
+                        <div class="loading-container">
+                            <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>${message}</span>
+                        </div>
+                    `;
+                    break;
+            }
+
+            // Update the result div with the new content and styles
+            resultDiv.innerHTML = `
+                <div class="result-card ${cardClass}">
+                    ${content}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
